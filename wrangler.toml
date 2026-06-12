@@ -1,6 +1,6 @@
 name = "botgroup-chat"
 pages_build_output_dir = "./dist"
-compatibility_date = "2026-06-13"
+compatibility_date = "2026-06-12"
 
 [[kv_namespaces]]
 binding = "bgkv"
