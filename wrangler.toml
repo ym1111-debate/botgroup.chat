@@ -9,7 +9,7 @@ id = "6b592babb2834c52a6505936349e96ea"
 [[d1_databases]]
 binding = "bgdb"
 database_name = "friends"
-database_id = "f68e9fa5-4aea-45db-9516-2d7052e936fa"
+database_id = "26707859-b1b6-4254-b7a0-18de672f96f8"
 
 [vars]
 GITHUB_CLIENT_ID = "0v231i0QzY0SaCX2KZ0c"
