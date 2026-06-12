@@ -4,7 +4,7 @@ compatibility_date = "2026-06-13"
 
 [[kv_namespaces]]
 binding = "bgkv"
-id = "cbd11575c3504e6bb043c1c250d2f7ed"
+id = "6b592babb2834c52a6505936349e96ea"
 preview_id = "cbd11575c3504e6bb043c1c250d2f7ed"
 
 [[d1_databases]]
