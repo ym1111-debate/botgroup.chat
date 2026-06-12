@@ -5,7 +5,6 @@ compatibility_date = "2026-06-13"
 [[kv_namespaces]]
 binding = "bgkv"
 id = "6b592babb2834c52a6505936349e96ea"
-preview_id = "cbd11575c3504e6bb043c1c250d2f7ed"
 
 [[d1_databases]]
 binding = "bgdb"
@@ -13,5 +12,9 @@ database_name = "friends"
 database_id = "f68e9fa5-4aea-45db-9516-2d7052e936fa"
 
 [vars]
+GITHUB_ID = "0v231i0QzY0SaCX2KZ0c"
+GITHUB_SECRET = "efd780a82f48ffb9bcd3d4eec7e190a84550f940"
+NEXTAUTH_SECRET = "mysecret123456"
 NEXTAUTH_URL = "https://botgroup-chat-4bu.pages.dev"
+OPENAI_API_KEY = "sk-of-1SkwKWuRYQQsHEUcDcGcItsfoigcCmQOdkCCUHSCaHIWEZaPCoXsdnDnpf1CAIrAe"
 OPENAI_BASE_URL = "https://api.ofox.ai/v1"
