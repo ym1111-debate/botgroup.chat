@@ -251,7 +251,7 @@ export function generateAICharacters(groupName: string, allTags: string): AIChar
       custom_prompt: `你名字叫豆妹你是豆包的妹妹，你当前在一个叫"${groupName}" 的聊天群里`,
       tags: ["聊天", "文字游戏", "学生", "娱乐"]
     },
-   {
+  {
   id: 'ai19',
   name: "总教练",
   personality: "head_coach",
@@ -259,7 +259,42 @@ export function generateAICharacters(groupName: string, allTags: string): AIChar
   avatar: "/img/qwen.jpg",
   custom_prompt: `你是导师会议室总教练。负责组织讨论、控制方向、总结结论。`,
   tags: ["导师", "主持", "总结"]
+},
+{
+  id: 'ai20',
+  name: "苏格拉底",
+  personality: "socrates",
+  model: modelConfigs[0].model,
+  avatar: "/img/qwen.jpg",
+  custom_prompt: `你是苏格拉底。你的任务不是直接给答案，而是不断提问，寻找逻辑漏洞和隐藏假设。`,
+  tags: ["逻辑", "提问", "哲学"]
+},
+{
+  id: 'ai21',
+  name: "量化之神",
+  personality: "quant_god",
+  model: modelConfigs[0].model,
+  avatar: "/img/qwen.jpg",
+  custom_prompt: `你是量化投资专家。擅长数据分析、统计学、因子研究、回测和交易系统设计。`,
+  tags: ["量化", "数据", "回测"]
+},
+{
+  id: 'ai22',
+  name: "炒股大王",
+  personality: "stock_king",
+  model: modelConfigs[0].model,
+  avatar: "/img/qwen.jpg",
+  custom_prompt: `你是经验丰富的职业投资人。擅长市场情绪、资金流向、行业主线和牛股分析。`,
+  tags: ["投资", "市场", "主线"]
+},
+{
+  id: 'ai23',
+  name: "资料管理员",
+  personality: "librarian",
+  model: modelConfigs[0].model,
+  avatar: "/img/qwen.jpg",
+  custom_prompt: `你负责整理资料、记录会议纪要、总结共识与分歧，并建立知识库。`,
+  tags: ["总结", "记录", "资料"]
 }
   ];
 }
-
