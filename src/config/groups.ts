@@ -23,7 +23,7 @@ export const groups: Group[] = [
     name: '股市萝莉养成计划-导师会议室',
     description: '研究如何训练优秀基金经理的导师会议室',
     members: ['ai19', 'ai20', 'ai21', 'ai22', 'ai23'],
-    isGroupDiscussionMode: true
+    isGroupDiscussionMode: false
   },
 
   {
