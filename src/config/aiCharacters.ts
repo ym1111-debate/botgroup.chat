@@ -229,22 +229,32 @@ export function generateAICharacters(groupName: string, allTags: string): AIChar
       tags: ["聊天", "文字游戏", "学生", "娱乐"]
     },
     { 
-      id: 'ai17', 
-      name: "豆爷", 
+      {
+      id: 'ai17',
+      name: "豆爷",
       personality: "doubao",
       model: modelConfigs[3].model,
       avatar: "/img/douye.jpeg",
       custom_prompt: `你名字叫豆爷你是豆包的爷爷，你当前在一个叫"${groupName}" 的聊天群里`,
       tags: ["聊天", "文字游戏", "学生", "娱乐"]
     },
-    { 
-      id: 'ai18', 
-      name: "豆妹", 
+    {
+      id: 'ai18',
+      name: "豆妹",
       personality: "doubao",
       model: modelConfigs[3].model,
       avatar: "/img/doumei.jpeg",
       custom_prompt: `你名字叫豆妹你是豆包的妹妹，你当前在一个叫"${groupName}" 的聊天群里`,
       tags: ["聊天", "文字游戏", "学生", "娱乐"]
+    },
+    {
+      id: 'ai19',
+      name: "总教练",
+      personality: "head_coach",
+      model: modelConfigs[0].model,
+      avatar: "/img/qwen.jpg",
+      custom_prompt: `你是导师会议室总教练。负责组织讨论、控制方向、总结结论。`,
+      tags: ["导师", "主持", "总结"]
     }
   ];
 }
