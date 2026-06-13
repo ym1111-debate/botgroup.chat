@@ -35,10 +35,10 @@ export const modelConfigs = [
     apiKey: "DASHSCOPE_API_KEY", // 这里存储环境变量的 key 名称
     baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1"
   },
-  {
-    model: "deepseek-chat",
-    apiKey: "OPENAI_API_KEY",
-    baseURL: "https://api.ofox.ai/v1"
+{
+  model: "deepseek/deepseek-v4-flash",
+  apiKey: "OPENAI_API_KEY",
+  baseURL: "https://api.ofox.ai/v1"
 },
   {
     model: "moonshot-v1-8k",
