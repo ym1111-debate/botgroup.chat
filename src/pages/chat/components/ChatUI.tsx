@@ -304,8 +304,13 @@ const ChatUI = () => {
         body: JSON.stringify({ message: inputMessage, history: messageHistory, availableAIs: groupAiCharacters })
       });
       const shedulerData = await shedulerResponse.json();
-      const selectedAIs = shedulerData.selectedAIs;
-      selectedGroupAiCharacters = selectedAIs.map(ai => groupAiCharacters.find(c => c.id === ai));
+const selectedAIs = shedulerData.selectedAIs;
+
+console.log("Scheduler选中的AI:", selectedAIs);
+
+selectedGroupAiCharacters = selectedAIs
+  .map(ai => groupAiCharacters.find(c => c.id === ai))
+  .filter(Boolean);
     }
     for (let i = 0; i < selectedGroupAiCharacters.length; i++) {
       //禁言
