@@ -1,5 +1,10 @@
 // 首先定义模型配置
 export const modelConfigs = [
+ {
+  model: "openai/gpt-5.4",
+  apiKey: "OPENAI_API_KEY",
+  baseURL: "https://api.ofox.ai/v1"
+},
   {
     model: "qwen-plus",
     apiKey: "DASHSCOPE_API_KEY", // 这里存储环境变量的 key 名称
@@ -250,7 +255,7 @@ export function generateAICharacters(groupName: string, allTags: string): AIChar
   id: 'ai19',
   name: "总教练",
   personality: "head_coach",
-  model: modelConfigs[7].model,
+  model: modelConfigs[0].model,
   avatar: "/img/qwen.jpg",
   custom_prompt: `你是导师会议室总教练。负责组织讨论、控制方向、总结结论。`,
   tags: ["导师", "主持", "总结"]
