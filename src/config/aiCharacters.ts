@@ -37,9 +37,9 @@ export const modelConfigs = [
   },
   {
     model: "deepseek-chat",
-    apiKey: "DEEPSEEK_API_KEY",
-    baseURL: "https://api.deepseek.com/v1"
-  },
+    apiKey: "OPENAI_API_KEY",
+    baseURL: "https://api.ofox.ai/v1"
+},
   {
     model: "moonshot-v1-8k",
     apiKey: "KIMI_API_KEY",
