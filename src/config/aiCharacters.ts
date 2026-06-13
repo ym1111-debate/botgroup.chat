@@ -229,7 +229,6 @@ export function generateAICharacters(groupName: string, allTags: string): AIChar
       tags: ["聊天", "文字游戏", "学生", "娱乐"]
     },
     { 
-      {
       id: 'ai17',
       name: "豆爷",
       personality: "doubao",
