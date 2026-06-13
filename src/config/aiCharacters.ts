@@ -250,7 +250,7 @@ export function generateAICharacters(groupName: string, allTags: string): AIChar
       id: 'ai19',
       name: "总教练",
       personality: "head_coach",
-      model: modelConfigs[6].model,
+      model: "deepseek-chat",
       avatar: "/img/qwen.jpg",
       custom_prompt: `你是导师会议室总教练。负责组织讨论、控制方向、总结结论。`,
       tags: ["导师", "主持", "总结"]
