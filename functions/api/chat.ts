@@ -17,7 +17,7 @@ function extractMentions(message: string, memberNames: string[]): string[] {
 }
 
 function findCharacterByName(name: string) {
-  const allChars = aiCharacters('');
+  const allChars = aiCharacters("", "");
   return allChars.find(c => c.name === name);
 }
 
@@ -33,13 +33,11 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
     
     const { message, groupId, history = [] } = body;
     
-    // 找到当前群组
     const group = groups.find(g => g.id === groupId);
     if (!group) {
       return new Response(JSON.stringify({ error: 'Group not found' }), { status: 404 });
     }
     
-    // 获取群成员名称列表
     const memberNames = group.members
       .map(id => {
         const char = findCharacterByName(id);
@@ -50,21 +48,17 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
     let targetCharacters = [];
     
     if (!group.isGroupDiscussionMode) {
-      // 点名模式：检查消息中是否 @ 了某人
       const mentionedNames = extractMentions(message, memberNames);
       
       if (mentionedNames.length > 0) {
-        // 只回复被 @ 的成员
         targetCharacters = mentionedNames
           .map(name => findCharacterByName(name))
           .filter(Boolean);
       } else {
-        // 没有 @ 任何人，默认调度器或第一个成员
         const defaultChar = findCharacterByName(memberNames[0]);
         if (defaultChar) targetCharacters = [defaultChar];
       }
     } else {
-      // 群讨论模式：所有成员都回复
       targetCharacters = group.members
         .map(id => findCharacterByName(id))
         .filter(Boolean);
@@ -74,11 +68,9 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
       return new Response(JSON.stringify({ error: 'No valid AI to respond' }), { status: 400 });
     }
     
-    // 获取第一个被选中的 AI 的模型配置
     const targetChar = targetCharacters[0];
     const modelId = targetChar.model;
     
-    // 调用 Ofox API
     const response = await fetch(`${env.OPENAI_BASE_URL}/chat/completions`, {
       method: 'POST',
       headers: {
