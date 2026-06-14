@@ -1,3 +1,9 @@
+export async function onRequestGet() {
+  return new Response("chat function alive", {
+    status: 200,
+    headers: { "Content-Type": "text/plain" }
+  });
+}
 import { generateAICharacters } from '../../src/config/aiCharacters';
 import { groups } from '../../src/config/groups';
 
