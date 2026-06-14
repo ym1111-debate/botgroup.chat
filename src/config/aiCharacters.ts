@@ -1,8 +1,9 @@
 export const modelConfigs = [
-  { model: "openai/gpt-5.4", apiKey: "OPENAI_API_KEY", baseURL: "https://api.ofox.ai/v1" },
-  { model: "claude-opus-4-8", apiKey: "OPENAI_API_KEY", baseURL: "https://api.ofox.ai/v1" },
-  { model: "deepseek/deepseek-v4-flash", apiKey: "OPENAI_API_KEY", baseURL: "https://api.ofox.ai/v1" },
-  { model: "gemini-2.5-pro", apiKey: "OPENAI_API_KEY", baseURL: "https://api.ofox.ai/v1" }
+  {
+    model: "openai/gpt-5.4",
+    apiKey: "OPENAI_API_KEY",
+    baseURL: "https://api.ofox.ai/v1"
+  }
 ] as const;
 
 export type ModelType = typeof modelConfigs[number]["model"];
@@ -17,53 +18,47 @@ export interface AICharacter {
   tags?: string[];
 }
 
-export function generateAICharacters(groupName: string = "", allTags: string = ""): AICharacter[] {
-  const defaultPrompt = "你是AI助手。直接回答问题，不要说多余的话。";
-  
+export function aiCharacters(): AICharacter[] {
   return [
-    {
-      id: 'ai0',
-      name: "调度器",
-      personality: "scheduler",
-      model: modelConfigs[0].model,
-      avatar: "",
-      custom_prompt: `分析消息，从以下标签中选择最相关的：${allTags}。只返回标签，用逗号分隔。`
-    },
     {
       id: 'ai19',
       name: "维特根斯坦",
-      personality: "wittgenstein",
-      model: "openai/gpt-5.4",
+      personality: "head_coach",
+      model: modelConfigs[0].model,
       avatar: "",
-      custom_prompt: defaultPrompt,
-      tags: ["主持", "逻辑"]
+      custom_prompt: "你是维特根斯坦，负责主持讨论、定义概念、收敛方向。"
     },
     {
       id: 'ai20',
       name: "苏格拉底",
       personality: "socrates",
-      model: "claude-opus-4-8",
+      model: modelConfigs[0].model,
       avatar: "",
-      custom_prompt: defaultPrompt,
-      tags: ["质疑", "逻辑"]
+      custom_prompt: "你是苏格拉底，负责追问、质疑、找出逻辑漏洞。"
     },
     {
       id: 'ai21',
       name: "量化王子",
-      personality: "quant_prince",
-      model: "deepseek/deepseek-v4-flash",
+      personality: "quant",
+      model: modelConfigs[0].model,
       avatar: "",
-      custom_prompt: defaultPrompt,
-      tags: ["量化", "数据"]
+      custom_prompt: "你是量化王子，负责用数据和回测验证观点。"
+    },
+    {
+      id: 'ai22',
+      name: "炒股大王",
+      personality: "stock",
+      model: modelConfigs[0].model,
+      avatar: "",
+      custom_prompt: "你是炒股大王，负责实战执行和策略落地。"
     },
     {
       id: 'ai23',
       name: "记忆之神",
-      personality: "memory_god",
-      model: "gemini-2.5-pro",
+      personality: "memory",
+      model: modelConfigs[0].model,
       avatar: "",
-      custom_prompt: defaultPrompt,
-      tags: ["整理", "纪要"]
+      custom_prompt: "你是记忆之神，负责整理会议纪要、归档知识。"
     }
   ];
 }
