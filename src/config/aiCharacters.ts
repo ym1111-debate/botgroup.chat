@@ -18,7 +18,10 @@ export interface AICharacter {
   tags?: string[];
 }
 
-export function aiCharacters(): AICharacter[] {
+export function generateAICharacters(
+  groupName: string = "",
+  allTags: string = ""
+): AICharacter[] {
   return [
     {
       id: 'ai19',
