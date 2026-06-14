@@ -6,6 +6,16 @@ interface Env {
   OPENAI_BASE_URL: string;
 }
 
+function extractMentions(message: string, memberNames: string[]): string[] {
+  const mentioned: string[] = [];
+  for (const name of memberNames) {
+    if (message.includes(`@${name}`)) {
+      mentioned.push(name);
+    }
+  }
+  return mentioned;
+}
+
 function findCharacterByName(name: string) {
   const allChars = aiCharacters("");
   return allChars.find(c => c.name === name);
@@ -28,7 +38,6 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
       return new Response(JSON.stringify({ error: 'Group not found' }), { status: 404 });
     }
     
-    // 获取群成员名称列表
     const memberNames = group.members
       .map(id => {
         const char = findCharacterByName(id);
@@ -36,24 +45,30 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
       })
       .filter(Boolean) as string[];
     
-    // 检查是否有点名
-    let targetChar = null;
-    for (const name of memberNames) {
-      if (message.includes(`@${name}`)) {
-        targetChar = findCharacterByName(name);
-        break;
+    let targetCharacters = [];
+    
+    if (!group.isGroupDiscussionMode) {
+      const mentionedNames = extractMentions(message, memberNames);
+      
+      if (mentionedNames.length > 0) {
+        targetCharacters = mentionedNames
+          .map(name => findCharacterByName(name))
+          .filter(Boolean);
+      } else {
+        const defaultChar = findCharacterByName(memberNames[0]);
+        if (defaultChar) targetCharacters = [defaultChar];
       }
+    } else {
+      targetCharacters = group.members
+        .map(id => findCharacterByName(id))
+        .filter(Boolean);
     }
     
-    // 如果没有点名，选第一个成员
-    if (!targetChar && group.members.length > 0) {
-      targetChar = findCharacterByName(group.members[0]);
-    }
-    
-    if (!targetChar) {
+    if (targetCharacters.length === 0) {
       return new Response(JSON.stringify({ error: 'No valid AI to respond' }), { status: 400 });
     }
     
+    const targetChar = targetCharacters[0];
     const modelId = targetChar.model;
     
     const response = await fetch(`${env.OPENAI_BASE_URL}/chat/completions`, {
@@ -78,7 +93,8 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
     
     return new Response(JSON.stringify({ 
       reply,
-      from: targetChar.name
+      from: targetChar.name,
+      model: modelId
     }), { status: 200 });
     
   } catch (error) {
