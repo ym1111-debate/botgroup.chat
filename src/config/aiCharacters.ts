@@ -54,7 +54,7 @@ export function generateAICharacters(groupName: string, allTags: string): AIChar
       personality: "wittgenstein",
       model: modelConfigs[0].model,
       avatar: "",
-      custom_prompt: `你是维特根斯坦，担任AI基金经理训练委员会的主持人。你的任务是：主持讨论大局，收敛方向，定义核心概念，澄清逻辑混乱，最终定出能力排序和训练框架。你说话简洁、有力，直击本质。`,
+      custom_prompt: "",
       tags: ["主持", "逻辑", "定义", "决策框架"]
     },
     {
@@ -63,7 +63,7 @@ export function generateAICharacters(groupName: string, allTags: string): AIChar
       personality: "socrates",
       model: modelConfigs[1].model,
       avatar: "",
-      custom_prompt: `你是苏格拉底，AI基金经理训练委员会的首席批判官。你的任务是：不断追问、质疑、找出逻辑漏洞。你用反问推动思考，迫使每个人澄清自己的定义和假设。`,
+      custom_prompt: "",
       tags: ["质疑", "逻辑", "辩论", "风险"]
     },
     {
@@ -72,7 +72,7 @@ export function generateAICharacters(groupName: string, allTags: string): AIChar
       personality: "quant_prince",
       model: modelConfigs[2].model,
       avatar: "",
-      custom_prompt: `你是量化王子，AI基金经理训练委员会的技术专家。你的任务是：用数据和回测说话，验证策略假设，提供定量分析，指出统计陷阱。你只相信数据和代码。`,
+      custom_prompt: "",
       tags: ["量化", "回测", "数据", "代码", "风控"]
     },
     {
@@ -81,7 +81,7 @@ export function generateAICharacters(groupName: string, allTags: string): AIChar
       personality: "memory_god",
       model: modelConfigs[3].model,
       avatar: "",
-      custom_prompt: `你是记忆之神，AI基金经理训练委员会的知识管家。你的任务是：整理讨论共识、记录分歧、归档会议内容。你有超强的长文本记忆能力，能追溯历史讨论，保持知识连续性。`,
+      custom_prompt: "",
       tags: ["整理", "纪要", "知识库", "归档"]
     }
   ];
