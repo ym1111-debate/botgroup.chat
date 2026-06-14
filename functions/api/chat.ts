@@ -1,4 +1,4 @@
-import { aiCharacters } from '../../src/config/aiCharacters';
+import { generateAICharacters } from '../../src/config/aiCharacters';
 import { groups } from '../../src/config/groups';
 
 interface Env {
@@ -17,7 +17,7 @@ function extractMentions(message: string, memberNames: string[]): string[] {
 }
 
 function findCharacterByName(name: string) {
-  const allChars = aiCharacters("", "");
+  const allChars = generateAICharacters("", "");
   return allChars.find(c => c.name === name);
 }
 
