@@ -271,199 +271,173 @@ const ChatUI = () => {
   }
 
   const handleSendMessage = async () => {
-    //判断是否Loding
     if (isLoading) return;
     if (!inputMessage.trim()) return;
 
-    // 添加用户消息
+    const currentInputMessage = inputMessage;
+
     const userMessage = {
       id: messages.length + 1,
       sender: users[0],
-      content: inputMessage,
+      content: currentInputMessage,
       isAI: false
     };
+
     setMessages(prev => [...prev, userMessage]);
     setInputMessage("");
     setIsLoading(true);
     setPendingContent("");
     accumulatedContentRef.current = "";
 
-    // 构建历史消息数组
     let messageHistory = messages.map(msg => ({
       role: 'user',
-      content: msg.sender.name == userStore.userInfo.nickname ? 'user：' + msg.content :  msg.sender.name + '：' + msg.content,
+      content: msg.sender.name == userStore.userInfo.nickname
+        ? 'user：' + msg.content
+        : msg.sender.name + '：' + msg.content,
       name: msg.sender.name
     }));
+
     let selectedGroupAiCharacters = groupAiCharacters;
-    if (!isGroupDiscussionMode) {
-      const shedulerResponse = await request(`/api/scheduler`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message: inputMessage, history: messageHistory, availableAIs: groupAiCharacters })
-      });
-      const shedulerData = await shedulerResponse.json();
-const selectedAIs = shedulerData.selectedAIs;
 
-console.log("Scheduler选中的AI:", selectedAIs);
-
-selectedGroupAiCharacters = selectedAIs
-  .map(ai => groupAiCharacters.find(c => c.id === ai))
-  .filter(Boolean);
-    }
-    for (let i = 0; i < selectedGroupAiCharacters.length; i++) {
-      //禁言
-      if (mutedUsers.includes(selectedGroupAiCharacters[i].id)) {
-        continue;
-      }
-      // 创建当前 AI 角色的消息
-      const aiMessage = {
-        id: messages.length + 2 + i,
-        sender: { id: selectedGroupAiCharacters[i].id, name: selectedGroupAiCharacters[i].name, avatar: selectedGroupAiCharacters[i].avatar },
-        content: "",
-        isAI: true
-      };
-      
-      // 添加当前 AI 的消息
-      setMessages(prev => [...prev, aiMessage]);
-      let uri = "/api/chat";
-      if (selectedGroupAiCharacters[i].rag == true) {
-        uri = "/rag/query";
-      }
-      try {
-        const response = await request(uri, {
+    try {
+      if (!isGroupDiscussionMode) {
+        const shedulerResponse = await request(`/api/scheduler`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: selectedGroupAiCharacters[i].model,
-            message: inputMessage,
-            query: inputMessage,
-            personality: selectedGroupAiCharacters[i].personality,
+            message: currentInputMessage,
             history: messageHistory,
-            index: i,
-            aiName: selectedGroupAiCharacters[i].name,
-            rag: selectedGroupAiCharacters[i].rag,
-            knowledge: selectedGroupAiCharacters[i].knowledge,
-            custom_prompt: selectedGroupAiCharacters[i].custom_prompt.replace('#groupName#', group.name) + "\n" + group.description
-          }),
+            availableAIs: groupAiCharacters
+          })
         });
 
-        if (!response.ok) {
-          throw new Error('请求失败');
-        }
+        const shedulerData = await shedulerResponse.json();
+        const selectedAIs = shedulerData.selectedAIs || [];
 
-        const reader = response.body?.getReader();
-        const decoder = new TextDecoder();
+        console.log("Scheduler选中的AI:", selectedAIs);
 
-        if (!reader) {
-          throw new Error('无法获取响应流');
-        }
-
-        let buffer = '';
-        let completeResponse = ''; // 用于跟踪完整的响应
-        // 添加超时控制
-        const timeout = 10000; // 10秒超时
-        while (true) {
-          //console.log("读取中")
-          const startTime = Date.now();
-          let { done, value } = await Promise.race([
-            reader.read(),
-            new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('响应超时')), timeout - (Date.now() - startTime))
-            )
-          ]);
-
-          if (Date.now() - startTime > timeout) {
-            reader.cancel();
-            console.log("读取超时")
-            if (completeResponse.trim() === "") {
-              throw new Error('响应超时');
-            }
-            done = true;
-          }
-
-          if (done) {
-            //如果completeResponse为空，
-            if (completeResponse.trim() === "") {
-            completeResponse = "对不起，我还不够智能，服务又断开了。";
-            setMessages(prev => {
-              const newMessages = [...prev];
-              const aiMessageIndex = newMessages.findIndex(msg => msg.id === aiMessage.id);
-              if (aiMessageIndex !== -1) {
-                newMessages[aiMessageIndex] = {
-                  ...newMessages[aiMessageIndex],
-                  content: completeResponse
-                };
-              }
-              return newMessages;
-            });}
-            break;
-          }
-          
-          buffer += decoder.decode(value, { stream: true });
-          
-          let newlineIndex;
-          while ((newlineIndex = buffer.indexOf('\n')) >= 0) {
-            const line = buffer.slice(0, newlineIndex);
-            buffer = buffer.slice(newlineIndex + 1);
-            
-            if (line.startsWith('data: ')) {
-              try {
-                const data = JSON.parse(line.slice(6));
-                if (data.content) {
-                  completeResponse += data.content;
-                  //正则去掉前面的任何AI名称：格式
-                  completeResponse = completeResponse.replace(new RegExp(`^(${allNames.join('|')})：`, 'i'), '');
-                  setMessages(prev => {
-                    const newMessages = [...prev];
-                    const aiMessageIndex = newMessages.findIndex(msg => msg.id === aiMessage.id);
-                    if (aiMessageIndex !== -1) {
-                      newMessages[aiMessageIndex] = {
-                        ...newMessages[aiMessageIndex],
-                        content: completeResponse
-                      };
-                    }
-                    return newMessages;
-                  });
-                } 
-
-              } catch (e) {
-                console.error('解析响应数据失败:', e);
-              }
-            }
-          }
-        }
-
-        // 将当前AI的回复添加到消息历史中，供下一个AI使用
-        messageHistory.push({
-          role: 'user',
-          content: aiMessage.sender.name + '：' + completeResponse,
-          name: aiMessage.sender.name
-        });
-
-        // 等待一小段时间再开始下一个 AI 的回复
-        if (i < groupAiCharacters.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-
-      } catch (error) {
-        console.error("发送消息失败:", error);
-        messageHistory.push({
-          role: 'user',
-          content: aiMessage.sender.name + "对不起，我还不够智能，服务又断开了(错误：" + error.message + ")。",
-          name: aiMessage.sender.name
-        });
-        setMessages(prev => prev.map(msg => 
-          msg.id === aiMessage.id 
-            ? { ...msg, content: "对不起，我还不够智能，服务又断开了(错误：" + error.message + ")。", isError: true }
-            : msg
-        ));
+        selectedGroupAiCharacters = selectedAIs
+          .map(ai => groupAiCharacters.find(c => c.id === ai))
+          .filter(Boolean);
       }
+
+      for (let i = 0; i < selectedGroupAiCharacters.length; i++) {
+        if (mutedUsers.includes(selectedGroupAiCharacters[i].id)) {
+          continue;
+        }
+
+        const aiMessage = {
+          id: Date.now() + i,
+          sender: {
+            id: selectedGroupAiCharacters[i].id,
+            name: selectedGroupAiCharacters[i].name,
+            avatar: selectedGroupAiCharacters[i].avatar
+          },
+          content: "",
+          isAI: true
+        };
+
+        setMessages(prev => [...prev, aiMessage]);
+
+        let uri = "/api/chat";
+        if (selectedGroupAiCharacters[i].rag == true) {
+          uri = "/rag/query";
+        }
+
+        try {
+          const response = await request(uri, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              groupId: group.id,
+              model: selectedGroupAiCharacters[i].model,
+              message: currentInputMessage,
+              query: currentInputMessage,
+              personality: selectedGroupAiCharacters[i].personality,
+              history: messageHistory,
+              index: i,
+              aiName: selectedGroupAiCharacters[i].name,
+              rag: selectedGroupAiCharacters[i].rag,
+              knowledge: selectedGroupAiCharacters[i].knowledge,
+              custom_prompt:
+                (selectedGroupAiCharacters[i].custom_prompt || '').replace('#groupName#', group.name) +
+                "\n" +
+                (group.description || '')
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error('请求失败');
+          }
+
+          const data = await response.json();
+
+          let completeResponse =
+            data.reply ||
+            data.content ||
+            data.message ||
+            "对不起，我还不够智能，服务又断开了。";
+
+          completeResponse = completeResponse.replace(
+            new RegExp(`^(${allNames.join('|')})：`, 'i'),
+            ''
+          );
+
+          setMessages(prev => {
+            const newMessages = [...prev];
+            const aiMessageIndex = newMessages.findIndex(
+              msg => msg.id === aiMessage.id
+            );
+
+            if (aiMessageIndex !== -1) {
+              newMessages[aiMessageIndex] = {
+                ...newMessages[aiMessageIndex],
+                content: completeResponse
+              };
+            }
+
+            return newMessages;
+          });
+
+          messageHistory.push({
+            role: 'user',
+            content: aiMessage.sender.name + '：' + completeResponse,
+            name: aiMessage.sender.name
+          });
+
+          if (i < selectedGroupAiCharacters.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+
+        } catch (error: any) {
+          console.error("发送消息失败:", error);
+
+          const errorText =
+            "对不起，我还不够智能，服务又断开了(错误：" +
+            (error?.message || String(error)) +
+            ")。";
+
+          messageHistory.push({
+            role: 'user',
+            content: aiMessage.sender.name + errorText,
+            name: aiMessage.sender.name
+          });
+
+          setMessages(prev => prev.map(msg =>
+            msg.id === aiMessage.id
+              ? { ...msg, content: errorText, isError: true }
+              : msg
+          ));
+        }
+      }
+    } catch (error: any) {
+      console.error("发送消息失败:", error);
     }
-    
+
     setIsLoading(false);
   };
 
