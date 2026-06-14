@@ -1,5 +1,5 @@
-export async function onRequestGet() {
-  return new Response("chat function alive", {
+export async function onRequest() {
+  return new Response("chat function alive for all methods", {
     status: 200,
     headers: { "Content-Type": "text/plain" }
   });
