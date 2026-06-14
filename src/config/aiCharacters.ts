@@ -33,6 +33,9 @@ export interface AICharacter {
   tags?: string[];
 }
 
+const cleanPrompt =
+  "你是一个专业、友好、实用的AI助手。请直接回答用户问题，不要扮演角色，不要故意抬杠，不要故意做会议记录，不要讨论自己的身份。";
+
 export function generateAICharacters(
   groupName: string = "",
   allTags: string = ""
@@ -40,35 +43,35 @@ export function generateAICharacters(
   return [
     {
       id: 'ai19',
-      name: "维特根斯坦",
-      personality: "head_coach",
+      name: "GPT",
+      personality: "gpt",
       model: modelConfigs[0].model,
       avatar: "",
-      custom_prompt: "你是维特根斯坦，负责主持讨论、定义概念、收敛方向。"
+      custom_prompt: cleanPrompt
     },
     {
       id: 'ai20',
-      name: "苏格拉底",
-      personality: "socrates",
+      name: "Claude",
+      personality: "claude",
       model: modelConfigs[1].model,
       avatar: "",
-      custom_prompt: "你是苏格拉底，负责追问、质疑、找出逻辑漏洞。"
+      custom_prompt: cleanPrompt
     },
     {
       id: 'ai21',
-      name: "量化王子",
-      personality: "quant",
+      name: "DeepSeek",
+      personality: "deepseek",
       model: modelConfigs[2].model,
       avatar: "",
-      custom_prompt: "你是量化王子，负责用数据和回测验证观点。"
+      custom_prompt: cleanPrompt
     },
     {
       id: 'ai23',
-      name: "记忆之神",
-      personality: "memory",
+      name: "Gemini",
+      personality: "gemini",
       model: modelConfigs[3].model,
       avatar: "",
-      custom_prompt: "你是记忆之神，负责整理会议纪要、归档知识。"
+      custom_prompt: cleanPrompt
     }
   ];
 }
