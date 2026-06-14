@@ -4,6 +4,7 @@ import { groups } from '../../src/config/groups';
 interface Env {
   OPENAI_API_KEY: string;
   OPENAI_BASE_URL: string;
+  DEEPSEEK_API_KEY: string;
 }
 
 function findCharacter(nameOrId: string) {
@@ -33,13 +34,39 @@ export async function onRequest(context: { request: Request; env: Env }) {
       message: string;
       groupId?: string;
       history?: any[];
+      aiName?: string;
+      personality?: string;
+      model?: string;
+      custom_prompt?: string;
     };
 
-    const { message, groupId = "", history = [] } = body;
+    const {
+      message,
+      groupId = "",
+      history = [],
+      aiName = "",
+      personality = "",
+      model = "",
+      custom_prompt = ""
+    } = body;
 
     let targetChar: any = null;
 
-    if (groupId) {
+    if (aiName) {
+      targetChar = findCharacter(aiName);
+    }
+
+    if (!targetChar && personality) {
+      const allChars = generateAICharacters("", "");
+      targetChar = allChars.find(c => c.personality === personality);
+    }
+
+    if (!targetChar && model) {
+      const allChars = generateAICharacters("", "");
+      targetChar = allChars.find(c => c.model === model);
+    }
+
+    if (!targetChar && groupId) {
       const group = groups.find(g => g.id === groupId);
 
       if (group && group.members && group.members.length > 0) {
@@ -48,7 +75,7 @@ export async function onRequest(context: { request: Request; env: Env }) {
     }
 
     if (!targetChar) {
-      targetChar = findCharacter("ai19") || findCharacter("维特根斯坦");
+      targetChar = findCharacter("ai19") || findCharacter("GPT");
     }
 
     if (!targetChar) {
@@ -63,19 +90,40 @@ export async function onRequest(context: { request: Request; env: Env }) {
     }
 
     const modelId = targetChar.model;
+    const isDeepSeek =
+      targetChar.name === "DeepSeek" ||
+      targetChar.personality === "deepseek" ||
+      modelId === "deepseek-chat" ||
+      modelId === "deepseek-reasoner" ||
+      modelId.includes("deepseek");
 
-    const aiResponse = await fetch(`${env.OPENAI_BASE_URL}/chat/completions`, {
+    const apiBaseUrl = isDeepSeek
+      ? "https://api.deepseek.com/v1"
+      : env.OPENAI_BASE_URL;
+
+    const apiKey = isDeepSeek
+      ? env.DEEPSEEK_API_KEY
+      : env.OPENAI_API_KEY;
+
+    const finalModel = isDeepSeek
+      ? "deepseek-chat"
+      : modelId;
+
+    const aiResponse = await fetch(`${apiBaseUrl}/chat/completions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${env.OPENAI_API_KEY}`
+        "Authorization": `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: modelId,
+        model: finalModel,
         messages: [
           {
             role: "system",
-            content: targetChar.custom_prompt || "你是一个有用的AI助手。"
+            content:
+              custom_prompt ||
+              targetChar.custom_prompt ||
+              "你是一个有用的AI助手。"
           },
           ...history,
           {
@@ -91,9 +139,9 @@ export async function onRequest(context: { request: Request; env: Env }) {
 
     if (!aiResponse.ok) {
       return new Response(JSON.stringify({
-        reply: `AI接口失败：${aiResponse.status}。${JSON.stringify(data).slice(0, 300)}`,
+        reply: `AI接口失败：${aiResponse.status}。${JSON.stringify(data).slice(0, 500)}`,
         from: targetChar.name,
-        model: modelId
+        model: finalModel
       }), {
         status: 200,
         headers: { "Content-Type": "application/json" }
@@ -107,7 +155,7 @@ export async function onRequest(context: { request: Request; env: Env }) {
     return new Response(JSON.stringify({
       reply,
       from: targetChar.name,
-      model: modelId
+      model: finalModel
     }), {
       status: 200,
       headers: { "Content-Type": "application/json" }
