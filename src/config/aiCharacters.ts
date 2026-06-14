@@ -52,7 +52,7 @@ export function generateAICharacters(groupName: string, allTags: string): AIChar
       id: 'ai19',
       name: "维特根斯坦",
       personality: "wittgenstein",
-      model: modelConfigs[0].model,
+      model: "openai/gpt-5.4",  // 直接写死
       avatar: "",
       custom_prompt: "",
       tags: ["主持", "逻辑", "定义", "决策框架"]
@@ -61,7 +61,7 @@ export function generateAICharacters(groupName: string, allTags: string): AIChar
       id: 'ai20',
       name: "苏格拉底",
       personality: "socrates",
-      model: modelConfigs[1].model,
+      model: "claude-opus-4-8",  // 直接写死
       avatar: "",
       custom_prompt: "",
       tags: ["质疑", "逻辑", "辩论", "风险"]
@@ -70,7 +70,7 @@ export function generateAICharacters(groupName: string, allTags: string): AIChar
       id: 'ai21',
       name: "量化王子",
       personality: "quant_prince",
-      model: modelConfigs[2].model,
+      model: "deepseek/deepseek-v4-flash",  // 直接写死
       avatar: "",
       custom_prompt: "",
       tags: ["量化", "回测", "数据", "代码", "风控"]
@@ -79,7 +79,7 @@ export function generateAICharacters(groupName: string, allTags: string): AIChar
       id: 'ai23',
       name: "记忆之神",
       personality: "memory_god",
-      model: modelConfigs[3].model,
+      model: "gemini-2.5-pro",  // 直接写死
       avatar: "",
       custom_prompt: "",
       tags: ["整理", "纪要", "知识库", "归档"]
